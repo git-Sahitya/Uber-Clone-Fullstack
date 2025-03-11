@@ -84,3 +84,53 @@ The request body must be in JSON format and include the following fields:
   "password": "securePass123"
 }
 `````
+...existing content...
+
+### /users/profile Endpoint
+
+#### Description
+This endpoint retrieves the profile of the authenticated user.
+
+#### HTTP Method
+`GET`
+
+#### Endpoint URL
+`/users/profile`
+
+#### Headers
+- **Authorization:** Bearer token via cookie or Authorization header.
+
+#### Success Response
+- **Status:** 200 OK  
+- **Response Body:**
+````json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  // ...other user fields...
+}
+
+### /users/logout Endpoint
+
+#### Description
+This endpoint logs out the authenticated user by clearing the authentication token cookie and blacklisting the token to prevent further use.
+
+#### HTTP Method
+`GET`
+
+#### Endpoint URL
+`/users/logout`
+
+#### Headers
+- **Authorization:** Bearer token provided via cookie or the Authorization header.
+
+#### Success Response
+- **Status:** 200 OK  
+- **Response Body:**
+````json
+{
+  "message": "Logged out"
+}
