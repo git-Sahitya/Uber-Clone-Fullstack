@@ -18,8 +18,7 @@ const UserSignup = () => {
       email,
       password,
     });
-    console.log(userData);
-    
+
     setEmail("");
     setFirstName("");
     setLastName("");
@@ -30,7 +29,7 @@ const UserSignup = () => {
       <div>
         <img
           className="w-20 "
-          src="https://www.svgrepo.com/show/505031/uber-driver.svg"
+          src="https://logospng.org/download/uber/logo-uber-4096.png"
           alt=""
         />
 
@@ -98,9 +97,9 @@ const UserSignup = () => {
       </div>
       <div>
         <p className="text-[10px] leading-tight ">
-          By proceeding, you consent bto get calls, WhatsApp or SMS
-          messages,including by automated means,from Uber and it's affiliated to
-          the number provided.
+          This site is protected by reCAPTCHA and the{" "}
+          <span className="underline"> Google Privacy Policy</span> and{" "}
+          <span className="underline">Terms of Service apply</span>.
         </p>
       </div>
     </div>
