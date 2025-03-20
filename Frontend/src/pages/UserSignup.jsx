@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserDataContext } from "../context/UserContext";
+import { toast } from "react-toastify";
 
 const UserSignup = () => {
   const [email, setEmail] = useState("");
@@ -8,16 +11,30 @@ const UserSignup = () => {
   const [lastName, setLastName] = useState("");
   const [userData, setUserData] = useState({});
 
-  const submitHandler = (e) => {
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(UserDataContext);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setUserData({
-      fullName: {
-        firstName,
-        lastName,
+    const newUser = {
+      fullname: {
+        firstname: firstName,
+        lastname: lastName,
       },
       email,
       password,
-    });
+    };
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/users/register`,
+      newUser
+    );
+
+    if (response.status === 201) {
+      const data = response.data;
+      setUser(data.user);
+      navigate("/login");
+      toast.success("🦄 Account created successfully!! ");
+    }
 
     setEmail("");
     setFirstName("");
@@ -85,7 +102,7 @@ const UserSignup = () => {
             }}
           />
           <button className="bg-[#111] text-white font-semibold mb-3 rounded  px-4 py-2  w-full text-base placeholder:text-base">
-            Login
+            Create account
           </button>
         </form>
         <p className="text-center mb-0.5 ">
