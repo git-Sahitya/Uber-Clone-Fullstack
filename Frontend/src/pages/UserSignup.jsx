@@ -11,7 +11,7 @@ const UserSignup = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     setUserData({
-      username: {
+      fullName: {
         firstName,
         lastName,
       },
@@ -38,7 +38,7 @@ const UserSignup = () => {
             submitHandler(e);
           }}
         >
-          <h3 className="text-lg font-medium mb-2">What's your name</h3>
+          <h3 className="text-lg w-full font-medium mb-2">What's your name</h3>
           <div className="flex gap-3 mb-6  ">
             <input
               className="bg-[#eeeeee]  rounded  px-4 py-2 border w-1/2 text-lg placeholder:text-base "
