@@ -5,36 +5,38 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const UserLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ userData, setUserData ] = useState({})
 
-  const navigate = useNavigate();
-  const { user, setUser } = useContext(UserDataContext);
+  const { user, setUser } = useContext(UserDataContext)
+  const navigate = useNavigate()
+
+
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     const userData = {
       email: email,
-      password: password,
-    };
-
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/users/login`,
-      userData
-    );
-
-    if (response.status === 200) {
-      const data = response.data;
-      setUser(data.user);
-      localStorage.setItem('token' ,data.token)
-      navigate("/home");
-      toast.success(" Logged in successfully");
+      password: password
     }
 
-    setEmail("");
-    setPassword("");
-  };
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData)
+
+    if (response.status === 200) {
+      const data = response.data
+      setUser(data.user)
+      localStorage.setItem('token', data.token)
+      navigate('/home')
+      toast.success(" Logged in successfully");
+
+    }
+
+
+    setEmail('')
+    setPassword('')
+  }
 
   return (
     <div className="p-7 h-screen flex flex-col justify-between ">
