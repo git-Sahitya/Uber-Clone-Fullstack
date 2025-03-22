@@ -3,7 +3,7 @@ import React from 'react'
 const CaptainHome = () => {
   return (
     <div>
-      Home 
+     Captain- Home 
     </div>
   )
 }
