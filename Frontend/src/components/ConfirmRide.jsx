@@ -1,6 +1,6 @@
 import React from "react";
 
-const ConfirmRide = () => {
+const ConfirmRide = (props) => {
   return (
     <div>
       <h5
@@ -41,7 +41,10 @@ const ConfirmRide = () => {
             </div>
           </div>
         </div>
-        <button className="w-full mt-5 bg-green-500 text-white font-semibold p-2 rounded-lg">
+        <button onClick={()=>{
+        props.setVehicleFound(true)
+        props.setConfirmRidePanel(false)
+        }} className="w-full mt-5 bg-green-500 text-white font-semibold p-2 rounded-lg">
           Confirm
         </button>
       </div>
