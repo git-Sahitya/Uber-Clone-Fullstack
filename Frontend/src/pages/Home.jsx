@@ -16,6 +16,7 @@ const Home = () => {
     e.preventDefault();
   };
 
+  // for Search panel open
   useGSAP(
     function () {
       if (panelOpen) {
@@ -41,17 +42,21 @@ const Home = () => {
     [panelOpen]
   );
 
-  useGSAP(function () {
-    if (vehiclePanel) {
-      gsap.to(vehiclePanelRef.current, {
-        transform: "translateY(0)",
-      });
-    } else {
-      gsap.to(vehiclePanelRef.current, {
-        transform: "translateY(100%)",
-      });
-    }
-  },[vehiclePanel]);
+  // For vehicle panel open
+  useGSAP(
+    function () {
+      if (vehiclePanel) {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [vehiclePanel]
+  );
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -114,7 +119,7 @@ const Home = () => {
         </div>
         <div ref={panelRef} className="h-[0] bg-white   ">
           <LocationSearchPanel
-            vehiclePanel={vehiclePanel}
+            setPanelOpen={setPanelOpen}
             setVehiclePanel={setVehiclePanel}
           />
         </div>
@@ -122,8 +127,13 @@ const Home = () => {
 
       <div
         ref={vehiclePanelRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full  bg-white p-3 py-8 px-3"
+        className="fixed w-full z-10 bottom-0 translate-y-full  bg-white p-3 py-10 px-3 pt-15"
       >
+        <h5 className=" p-2 text-center w-[90%]  absolute top-0 right-2 "
+         onClick={()=>{
+          setVehiclePanel(false)
+         }}
+        ><i className= " text-2xl  text-gray-300 ri-arrow-down-wide-line"></i></h5>
         <h3 className="text-2xl font-semibold mb-5">Choose a vehicle</h3>
 
         <div className="flex w-full  border-1 border-white active:border-black   mb-2 rounded-xl p-3  items-center justify-between">
