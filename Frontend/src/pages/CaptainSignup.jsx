@@ -74,7 +74,7 @@ const CaptainSignup = () => {
           }}
         >
           <h3 className="text-lg w-full font-medium mb-2">What's your name</h3>
-          <div className="flex gap-3 mb-6  ">
+          <div className="flex gap-3 mb-5  ">
             <input
               className="bg-[#eeeeee]  rounded  px-4 py-2 border w-1/2 text-lg placeholder:text-base "
               required
@@ -183,7 +183,7 @@ const CaptainSignup = () => {
         </p>
       </div>
       <div>
-        <p className="text-[10px] leading-tight ">
+        <p className="text-[11px] leading-tight mt-8 mb-4 ">
           This site is protected by reCAPTCHA and the{" "}
           <span className="underline"> Google Privacy Policy</span> and{" "}
           <span className="underline">Terms of Service apply</span>.
