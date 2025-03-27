@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CaptainDataContext } from "../context/CaptainContext";
-import { toast } from "react-toastify";
 
 const CaptainLogin = () => {
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ const CaptainLogin = () => {
       setCaptain(data.captain)
       localStorage.setItem("token", data.token);
       navigate("/captain-home");
-      toast.success(" Logged in successfully");
     }
     setEmail("");
     setPassword("");
