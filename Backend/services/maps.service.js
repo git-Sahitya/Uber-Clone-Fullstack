@@ -1,34 +1,20 @@
 const axios = require("axios");
 
-module.exports.getAddressCoordinate = async (input) => {
+module.exports.getAddressCoordinate = async (address) => {
   const apiKey = process.env.GO_MAPS_API;
-
-  const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
-
+  const url = `https://maps.gomaps.pro/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
   try {
     const response = await axios.get(url);
-
-    if (response.data.status === "OK") {
-      const predictions = response.data.predictions;
-
-      if (predictions && predictions.length > 0) {
-        // Assuming the API provides geometry.location with lat/lng
-        const placeId = predictions[0].place_id;
-
-        // Fetch place details to get latitude and longitude
-        const placeDetailsUrl = `https://maps.gomaps.pro/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
-        const placeDetailsResponse = await axios.get(placeDetailsUrl);
-
-        if (placeDetailsResponse.data.status === "OK") {
-          const location = placeDetailsResponse.data.result.geometry.location;
-          return {
-            description: predictions[0].description,
-            latitude: location.lat,
-            longitude: location.lng,
-          };
-        }
-      }
+    if (response.data.status === "OK" && response.data.results.length > 0) {
+      const location = response.data.results[0].geometry.location;
+      return {
+        address: response.data.results[0].formatted_address,
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+    } else {
+      throw new Error("No results found for the given address");
     }
   } catch (error) {
     console.error("Error in getAddressCoordinate:", error.message);
@@ -37,37 +23,49 @@ module.exports.getAddressCoordinate = async (input) => {
 };
 
 module.exports.getDistanceTime = async (origin, destination) => {
-    if (!origin || !destination) {
-        throw new Error('Origin and destination are required');
+  if (!origin || !destination) {
+    throw new Error("Origin and destination are required");
+  }
+
+  const apiKey = process.env.GO_MAPS_API;
+
+  // URL for gomaps.pro Distance Matrix API
+  const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url);
+    if (response.data.status === "OK") {
+      if (response.data.rows[0].elements[0].status === "ZERO_RESULTS") {
+        throw new Error("No routes found");
+      }
+
+      return response.data.rows[0].elements[0];
+    } else {
+      throw new Error("Unable to fetch distance and time");
     }
-
-    const apiKey = process.env.GO_MAPS_API;
-
-    // URL for gomaps.pro Distance Matrix API
-    const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
-
-    try {
-        const response = await axios.get(url);
-
-        if (response.data.status === 'OK') {
-            const element = response.data.rows[0].elements[0];
-
-            if (element.status === 'ZERO_RESULTS') {
-                throw new Error('No routes found');
-            }
-
-            // Return distance and duration
-            return {
-                distance: element.distance.text, // e.g., "5.3 km"
-                duration: element.duration.text, // e.g., "12 mins"
-                distanceValue: element.distance.value, // e.g., 5300 (in meters)
-                durationValue: element.duration.value, // e.g., 720 (in seconds)
-            };
-        } else {
-            throw new Error(`API Error: ${response.data.status}`);
-        }
-    } catch (err) {
-        console.error("Error in getDistanceTime:", err.message);
-        throw err;
-    }
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 };
+
+module.exports.getAutoCompleteSuggestions = async (input) => {
+  if (!input) {
+      throw new Error('query is required');
+  }
+
+  const apiKey = process.env.GO_MAPS_API;
+  const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url);
+    if (response.data.status === 'OK') {
+        return response.data.predictions.map(prediction => prediction.description).filter(value => value);
+    } else {
+        throw new Error('Unable to fetch suggestions');
+    }
+} catch (err) {
+    console.error(err);
+    throw err;
+}
+}
