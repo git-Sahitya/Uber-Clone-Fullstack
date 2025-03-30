@@ -26,7 +26,6 @@ module.exports.getDistanceTime = async (origin, destination) => {
   if (!origin || !destination) {
     throw new Error("Origin and destination are required");
   }
-
   const apiKey = process.env.GO_MAPS_API;
 
   // URL for gomaps.pro Distance Matrix API
@@ -60,7 +59,11 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
   try {
     const response = await axios.get(url);
     if (response.data.status === 'OK') {
-        return response.data.predictions.map(prediction => prediction.description).filter(value => value);
+        return response.data.predictions
+        .map(prediction => ({
+          description: prediction.description,
+          terms: prediction.terms
+        })).filter(value => value);
     } else {
         throw new Error('Unable to fetch suggestions');
     }
