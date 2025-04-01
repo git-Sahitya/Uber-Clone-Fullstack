@@ -66,6 +66,8 @@ const Home = () => {
       console.error("Search error:", error.response?.data || error.message);
     }
   };
+ 
+
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -158,6 +160,11 @@ const Home = () => {
     [waitingForDriver]
   );
 
+  
+  const findTrip =()=>{
+    setVehiclePanel(true)
+    setPanelOpen(false)
+  }
   return (
     <div className="h-screen relative overflow-hidden">
       <img
@@ -214,7 +221,10 @@ const Home = () => {
               placeholder="Add a destination"
             />
           </form>
-         
+          <button
+          onClick={findTrip}
+        className="bg-gray-700 text-lg text-white px-2 py-2 rounded-lg mt-6 w-full"
+       >Find Trip</button>
         </div>
         <div ref={panelRef} className="h-[0] bg-white   ">
           <LocationSearchPanel
