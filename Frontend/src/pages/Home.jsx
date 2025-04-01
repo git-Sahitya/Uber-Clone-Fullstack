@@ -20,6 +20,7 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
+  const [fare, setFare] = useState({})
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -161,10 +162,36 @@ const Home = () => {
   );
 
   
-  const findTrip =()=>{
+  const findTrip = async ()=>{
     setVehiclePanel(true)
     setPanelOpen(false)
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+      params : {pickup , destination},
+      headers :{
+        Authorization : `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+   setFare(response.data)
   }
+
+  const createRide =  async (req, res) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
+        pickup,
+        destination,
+        vehicleType,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log("Ride created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating ride:", error.response?.data || error.message);
+      alert("Failed to create ride. Please try again.");
+    }
+  }
+
   return (
     <div className="h-screen relative overflow-hidden">
       <img
@@ -247,6 +274,8 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white py-10 px-3 pt-15"
       >
         <VehiclePanel
+        createRide ={createRide}
+          fare={fare}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehiclePanel={setVehiclePanel}
         />
