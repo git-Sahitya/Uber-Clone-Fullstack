@@ -10,7 +10,11 @@ async function getFare(pickup, destination) {
 
   
   const distanceTime = await mapService.getDistanceTime(pickup, destination);
- 
+  console.log("Distance and Time:", distanceTime);
+
+  if (!distanceTime.distance || !distanceTime.duration) {
+    throw new Error("Invalid distance or duration data");
+  }
   // Calculate the fare using distance
 
   const baseFare = {
@@ -29,9 +33,9 @@ async function getFare(pickup, destination) {
     moto: 1.5,
   };
   const fare = {
-    auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
-    car: Math.round(baseFare.car + ((distanceTime.distance.value / 1000) * perKmRate.car) + ((distanceTime.duration.value / 60) * perMinuteRate.car)),
-    moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto))
+    auto: Math.round(baseFare.auto + ((distanceTime.distance / 1000) * perKmRate.auto) + ((distanceTime.duration / 60) * perMinuteRate.auto)),
+    car: Math.round(baseFare.car + ((distanceTime.distance / 1000) * perKmRate.car) + ((distanceTime.duration/ 60) * perMinuteRate.car)),
+    moto: Math.round(baseFare.moto + ((distanceTime.distance / 1000) * perKmRate.moto) + ((distanceTime.duration / 60) * perMinuteRate.moto))
 };
   return fare;
 }

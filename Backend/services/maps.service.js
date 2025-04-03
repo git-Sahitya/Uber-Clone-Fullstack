@@ -2,16 +2,17 @@ const axios = require("axios");
 
 module.exports.getAddressCoordinate = async (address) => {
   const apiKey = process.env.GO_MAPS_API;
-  const url = `https://maps.gomaps.pro/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+  const url = `https://us1.locationiq.com/v1/search.php?key=${apiKey}&q=${encodeURIComponent(address)}&format=json`;
 
   try {
     const response = await axios.get(url);
-    if (response.data.status === "OK" && response.data.results.length > 0) {
-      const location = response.data.results[0].geometry.location;
+
+    if (response.data && response.data.length > 0) {
+      const location = response.data[0];
       return {
-        address: response.data.results[0].formatted_address,
+        address: location.display_name,
         latitude: location.lat,
-        longitude: location.lng,
+        longitude: location.lon,
       };
     } else {
       throw new Error("No results found for the given address");
@@ -22,53 +23,64 @@ module.exports.getAddressCoordinate = async (address) => {
   }
 };
 
+
 module.exports.getDistanceTime = async (origin, destination) => {
   if (!origin || !destination) {
     throw new Error("Origin and destination are required");
   }
+
   const apiKey = process.env.GO_MAPS_API;
 
-  // URL for gomaps.pro Distance Matrix API
-  const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
-
   try {
-    const response = await axios.get(url);
-    if (response.data.status === "OK") {
-      if (response.data.rows[0].elements[0].status === "ZERO_RESULTS") {
-        throw new Error("No routes found");
-      }
+    const originCoords = await module.exports.getAddressCoordinate(origin);
+    const destinationCoords = await module.exports.getAddressCoordinate(destination);
 
-      return response.data.rows[0].elements[0];
+    if (!originCoords.latitude || !originCoords.longitude || !destinationCoords.latitude || !destinationCoords.longitude) {
+      throw new Error("Invalid coordinates for origin or destination");
+    }
+
+    const url = `https://us1.locationiq.com/v1/directions/driving/${originCoords.longitude},${originCoords.latitude};${destinationCoords.longitude},${destinationCoords.latitude}?key=${apiKey}&overview=full&steps=true`;
+
+    const response = await axios.get(url);
+
+    if (response.data && response.data.routes && response.data.routes.length > 0) {
+      const route = response.data.routes[0];
+      return {
+        distance: route.distance, 
+        duration: route.duration, 
+      };
     } else {
       throw new Error("Unable to fetch distance and time");
     }
   } catch (err) {
-    console.error(err);
-    throw err;
+    throw new Error(`Error in getDistanceTime: ${err.message}`);
   }
 };
 
+
 module.exports.getAutoCompleteSuggestions = async (input) => {
   if (!input) {
-      throw new Error('query is required');
+    throw new Error("Input query is required");
   }
 
-  const apiKey = process.env.GO_MAPS_API;
-  const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
+  const apiKey = process.env.GO_MAPS_API; 
+  const url = `https://us1.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${encodeURIComponent(input)}&format=json`;
 
   try {
     const response = await axios.get(url);
-    if (response.data.status === 'OK') {
-        return response.data.predictions
-        .map(prediction => ({
-          description: prediction.description,
-          terms: prediction.terms
-        })).filter(value => value);
+
+    if (response.data && response.data.length > 0) {
+      return response.data.map((suggestion) => ({
+        description: suggestion.display_name,
+        latitude: suggestion.lat,
+        longitude: suggestion.lon,
+        term: suggestion.display_name.split(",")[0],
+      }));
     } else {
-        throw new Error('Unable to fetch suggestions');
+      throw new Error("No autocomplete suggestions found");
     }
-} catch (err) {
-    console.error(err);
+  } catch (err) {
+    console.error("Error in getAutoCompleteSuggestions:", err.message);
     throw err;
-}
-}
+  }
+};

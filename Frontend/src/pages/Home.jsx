@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import axios from "axios";
+import _ from "lodash"
 import "remixicon/fonts/remixicon.css";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
@@ -29,46 +30,78 @@ const Home = () => {
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
 
-  const handlePickupChange = async (e) => {
-    const value = e.target.value;
-    setPickup(value);
-
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-        {
-          params: { input: value },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setPickupSuggestions(response.data);
-    } catch (error) {
-      console.error("Search error:", error.response?.data || error.message);
-    }
-  };
-  const handleDestinationChange = async (e) => {
-    const value = e.target.value;
-    setDestination(value);
-
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-        {
-          params: { input: value },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setDestinationSuggestions(response.data);
-    } catch (error) {
-      console.error("Search error:", error.response?.data || error.message);
-    }
-  };
  
+  // Auto Suggestion address 
 
+  const fetchPickupSuggestions = useRef(
+    _.debounce(async (value) => {
+      if (!value.trim()) return;
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+          {
+            params: { input: value },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setPickupSuggestions(response.data);
+      } catch (error) {
+        if (error.response?.status === 429) {
+          alert("Too many requests. Please wait a moment and try again.");
+        } else {
+          console.error("Error fetching suggestions:", error.response?.data || error.message);
+        }
+      }
+    }, 2000) // Increased debounce delay to 2000ms (2 sec)
+  ).current;
+
+  const fetchDestinationSuggestions = useRef(
+    _.debounce(async (value) => {
+      if (!value.trim()) return;
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+          {
+            params: { input: value },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setDestinationSuggestions(response.data);
+      } catch (error) {
+        if (error.response?.status === 429) {
+          alert("Too many requests. Please wait a moment and try again.");
+        } else {
+          console.error("Error fetching suggestions:", error.response?.data || error.message);
+        }
+      }
+    }, 2000) // Increased debounce delay to 2000ms (2 sec)
+  ).current;
+
+  // Input change handlers
+  const handlePickupChange = (e) => {
+    setPickup(e.target.value);
+    fetchPickupSuggestions(e.target.value); // Call the debounced function
+  };
+
+  const handleDestinationChange = (e) => {
+    setDestination(e.target.value);
+    fetchDestinationSuggestions(e.target.value); // Call the debounced function
+  };
+
+  // Cleanup debounce functions on component unmount
+  useEffect(() => {
+    return () => {
+      fetchPickupSuggestions.cancel();
+      fetchDestinationSuggestions.cancel();
+    };
+  }, []);
+
+ 
+// end autoSuggestion 
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -162,17 +195,28 @@ const Home = () => {
   );
 
   
-  const findTrip = async ()=>{
-    setVehiclePanel(true)
-    setPanelOpen(false)
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
-      params : {pickup , destination},
-      headers :{
-        Authorization : `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-   setFare(response.data)
-  }
+  const findTrip = async () => {
+    console.log("findTrip called");
+    setVehiclePanel(true);
+    setPanelOpen(false);
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+        params: { pickup, destination },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Fare response:", response.data);
+      setFare({
+        auto: response.data.auto || 0,
+        car: response.data.car || 0,
+        moto: response.data.moto || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching fare:", error.response?.data || error.message);
+      alert("Failed to fetch fare. Please try again.");
+    }
+  };
 
   const createRide =  async (req, res) => {
     try {
