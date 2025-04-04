@@ -22,6 +22,7 @@ const Home = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({})
+  const [vehicleType, setVehicleType] = useState(null)
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -218,7 +219,7 @@ const Home = () => {
     }
   };
 
-  const createRide =  async (req, res) => {
+  const createRide =  async () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
         pickup,
@@ -318,7 +319,7 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white py-10 px-3 pt-15"
       >
         <VehiclePanel
-        createRide ={createRide}
+         selectVehicle ={setVehicleType}
           fare={fare}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehiclePanel={setVehiclePanel}
@@ -330,6 +331,11 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white  py-6 px-3 pt-15"
       >
         <ConfirmRide
+        fare={fare}
+        vehicleType={vehicleType}
+        createRide = {createRide}
+        pickup={pickup}
+        destination={destination}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
         />
@@ -339,7 +345,13 @@ const Home = () => {
         ref={vehicleFoundRef}
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white  py-6 px-3 pt-15"
       >
-        <LookingForDriver setVehicleFound={setVehicleFound} />
+        <LookingForDriver
+          fare={fare}
+          vehicleType={vehicleType}
+          createRide = {createRide}
+          pickup={pickup}
+          destination={destination}
+          setVehicleFound={setVehicleFound} />
       </div>
 
       <div
