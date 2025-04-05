@@ -6,15 +6,18 @@ import { BrowserRouter } from "react-router-dom";
 import UserContext from "./context/UserContext.jsx";
 import { ToastContainer } from "react-toastify";
 import CaptainContext from "./context/CaptainContext.jsx";
+import SocketProvider from './context/SocketContext.jsx'
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
       <CaptainContext>
     <UserContext>
+    <SocketProvider>
     <BrowserRouter>
       <App />
       <ToastContainer/>
     </BrowserRouter>
+    </SocketProvider>
     </UserContext>
     </CaptainContext>
   </StrictMode>

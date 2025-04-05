@@ -2,13 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import axios from "axios";
-import _ from "lodash"
+import _ from "lodash";
 import "remixicon/fonts/remixicon.css";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import { SocketContext } from "../context/SocketContext";
+import { useContext } from "react";
+import { UserDataContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -21,8 +25,8 @@ const Home = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
-  const [fare, setFare] = useState({})
-  const [vehicleType, setVehicleType] = useState(null)
+  const [fare, setFare] = useState({});
+  const [vehicleType, setVehicleType] = useState(null);
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -31,8 +35,14 @@ const Home = () => {
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
 
- 
-  // Auto Suggestion address 
+  const { socket } = useContext(SocketContext);
+  const { user } = useContext(UserDataContext);
+
+  useEffect(() => {
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user]);
+
+  // Auto Suggestion address
 
   const fetchPickupSuggestions = useRef(
     _.debounce(async (value) => {
@@ -52,7 +62,10 @@ const Home = () => {
         if (error.response?.status === 429) {
           alert("Too many requests. Please wait a moment and try again.");
         } else {
-          console.error("Error fetching suggestions:", error.response?.data || error.message);
+          console.error(
+            "Error fetching suggestions:",
+            error.response?.data || error.message
+          );
         }
       }
     }, 2000) // Increased debounce delay to 2000ms (2 sec)
@@ -76,7 +89,10 @@ const Home = () => {
         if (error.response?.status === 429) {
           alert("Too many requests. Please wait a moment and try again.");
         } else {
-          console.error("Error fetching suggestions:", error.response?.data || error.message);
+          console.error(
+            "Error fetching suggestions:",
+            error.response?.data || error.message
+          );
         }
       }
     }, 2000) // Increased debounce delay to 2000ms (2 sec)
@@ -101,8 +117,7 @@ const Home = () => {
     };
   }, []);
 
- 
-// end autoSuggestion 
+  // end autoSuggestion
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -195,18 +210,20 @@ const Home = () => {
     [waitingForDriver]
   );
 
-  
   const findTrip = async () => {
     console.log("findTrip called");
     setVehiclePanel(true);
     setPanelOpen(false);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
-        params: { pickup, destination },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+        {
+          params: { pickup, destination },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log("Fare response:", response.data);
       setFare({
         auto: response.data.auto || 0,
@@ -214,28 +231,38 @@ const Home = () => {
         moto: response.data.moto || 0,
       });
     } catch (error) {
-      console.error("Error fetching fare:", error.response?.data || error.message);
+      console.error(
+        "Error fetching fare:",
+        error.response?.data || error.message
+      );
       alert("Failed to fetch fare. Please try again.");
     }
   };
 
-  const createRide =  async () => {
+  const createRide = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
-        pickup,
-        destination,
-        vehicleType,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create`,
+        {
+          pickup,
+          destination,
+          vehicleType,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log("Ride created successfully:", response.data);
     } catch (error) {
-      console.error("Error creating ride:", error.response?.data || error.message);
+      console.error(
+        "Error creating ride:",
+        error.response?.data || error.message
+      );
       alert("Failed to create ride. Please try again.");
     }
-  }
+  };
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -275,7 +302,7 @@ const Home = () => {
               type="text"
               onClick={() => {
                 setPanelOpen(true);
-                setActiveField('pickup')
+                setActiveField("pickup");
               }}
               value={pickup}
               onChange={handlePickupChange}
@@ -286,7 +313,7 @@ const Home = () => {
               type="text"
               onClick={() => {
                 setPanelOpen(true);
-                setActiveField('destination')
+                setActiveField("destination");
               }}
               value={destination}
               onChange={handleDestinationChange}
@@ -294,9 +321,11 @@ const Home = () => {
             />
           </form>
           <button
-          onClick={findTrip}
-        className="bg-gray-700 text-lg text-white px-2 py-2 rounded-lg mt-6 w-full"
-       >Find Trip</button>
+            onClick={findTrip}
+            className="bg-gray-700 text-lg text-white px-2 py-2 rounded-lg mt-6 w-full"
+          >
+            Find Trip
+          </button>
         </div>
         <div ref={panelRef} className="h-[0] bg-white   ">
           <LocationSearchPanel
@@ -319,7 +348,7 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white py-10 px-3 pt-15"
       >
         <VehiclePanel
-         selectVehicle ={setVehicleType}
+          selectVehicle={setVehicleType}
           fare={fare}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehiclePanel={setVehiclePanel}
@@ -331,11 +360,11 @@ const Home = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full  bg-white  py-6 px-3 pt-15"
       >
         <ConfirmRide
-        fare={fare}
-        vehicleType={vehicleType}
-        createRide = {createRide}
-        pickup={pickup}
-        destination={destination}
+          fare={fare}
+          vehicleType={vehicleType}
+          createRide={createRide}
+          pickup={pickup}
+          destination={destination}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
         />
@@ -348,10 +377,11 @@ const Home = () => {
         <LookingForDriver
           fare={fare}
           vehicleType={vehicleType}
-          createRide = {createRide}
+          createRide={createRide}
           pickup={pickup}
           destination={destination}
-          setVehicleFound={setVehicleFound} />
+          setVehicleFound={setVehicleFound}
+        />
       </div>
 
       <div
