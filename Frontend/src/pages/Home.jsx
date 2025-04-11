@@ -365,6 +365,7 @@ const Home = () => {
           createRide={createRide}
           pickup={pickup}
           destination={destination}
+          passenger = {passenger}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
         />

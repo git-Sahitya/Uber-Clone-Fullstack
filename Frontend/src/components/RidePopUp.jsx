@@ -19,7 +19,7 @@ const RidePopUp = (props) => {
             src="https://img.freepik.com/free-vector/organic-flat-dia-motorista-illustration_23-2148961409.jpg?uid=R193013355&ga=GA1.1.1896811457.1729647436&semt=ais_hybrid"
             alt=""
           />
-          <h2 className="text-lg font-medium">Rahul Singh</h2>
+          <h2 className="text-lg font-medium">{props.ride?.user.fullname.firstname + " " + props.ride?.user.fullname.lastname }</h2>
         </div>
         <h5 className="text-lg font-medium">2.2Km</h5>
       </div>
@@ -28,21 +28,21 @@ const RidePopUp = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">B/54</h3>
-              <p className="text-sm text-gray-600"> Lanka, Varanasi</p>
+              <h3 className="text-base font-medium">{props.ride?.pickup}</h3>
+              <p className="text-sm text-gray-600"> {props.ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">Lane no.9</h3>
-              <p className="text-sm text-gray-600"> Cantt, Varanasi</p>
+              <h3 className="text-base font-medium">{props.ride?.destination}</h3>
+              <p className="text-sm text-gray-600"> {props.ride?.destination}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className=" ri-currency-fill"></i>
             <div>
-              <h3 className="  text-base font-medium">$2.09</h3>
+              <h3 className="  text-base font-medium">₹{props.ride?.fare}</h3>
               <p className="text-sm text-gray-600"> Cash Cash</p>
             </div>
           </div>
@@ -59,6 +59,7 @@ const RidePopUp = (props) => {
           <button
             onClick={() => {
               props.setConfirmRidePopupPanel(true);
+              props.confirmRide()
             }}
             className="  bg-green-500 text-white font-semibold p-3 px-8 rounded-lg"
           >

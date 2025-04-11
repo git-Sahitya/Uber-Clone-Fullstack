@@ -4,49 +4,60 @@ import CaptainDetails from "../components/CaptainDetails";
 import RidePopUp from "../components/RidePopUp";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import axios from 'axios'
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
 import { useEffect, useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(true);
+  const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const ridePopupPanelRef = useRef(null);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
   const confirmRidePopupPanelRef = useRef(null);
+  const [ride, setRide] = useState(null)
 
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(CaptainDataContext);
 
   useEffect(() => {
-    socket.emit("join", { userType: "captain", userId: captain._id });
-  });
-  const updateLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
+    socket.emit('join', {
+        userId: captain._id,
+        userType: 'captain'
+    })
+    const updateLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
 
-         console.log({userId: captain._id,
-          location: {
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          },});
-         
-
-        socket.emit("update-location-captain", {
-          userId: captain._id,
-          location: {
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          },
-        });
-      });
+                socket.emit('update-location-captain', {
+                    userId: captain._id,
+                    location: {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    }
+                })
+            })
+        }
     }
-  };
 
-  const locationInterval = setInterval(updateLocation, 10000);
-  updateLocation();
+    const locationInterval = setInterval(updateLocation, 10000)
+    updateLocation()
 
-  // return () => clearInterval(locationInterval) })
+    // return () => clearInterval(locationInterval)
+}, [])
+
+  socket.on('new-ride' , (data)=>{
+    console.log(data);
+    setRide(data)
+    setRidePopupPanel(true)
+    
+  })
+
+ const confirmRide = async () => {
+  const  response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm` , {
+    
+  })
+ }
 
   useGSAP(
     function () {
@@ -109,8 +120,10 @@ const CaptainHome = () => {
         className="fixed w-full z-10 bottom-0 translate-y-full   bg-white py-10 px-3 pt-15"
       >
         <RidePopUp
+        ride ={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
+          confirmRide = {confirmRide}
         />
       </div>
 

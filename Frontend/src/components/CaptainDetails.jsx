@@ -28,7 +28,7 @@ const CaptainDetails = () => {
             <p className="text-sm text-gray-600"> KiloMeter</p>
           </div>
           <div className="text-center">
-            <i class=" text-3xl font-thin ri-wallet-2-line"></i>
+            <i className=" text-3xl font-thin ri-wallet-2-line"></i>
             <h5 className="text-lg font-medium">18.74</h5>
             <p className="text-sm text-gray-600"> Dollar</p>
           </div>
