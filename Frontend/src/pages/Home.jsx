@@ -12,7 +12,6 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { SocketContext } from "../context/SocketContext";
 import { useContext } from "react";
 import { UserDataContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -39,6 +38,7 @@ const Home = () => {
   const { user } = useContext(UserDataContext);
 
   useEffect(() => {
+    
     socket.emit("join", { userType: "user", userId: user._id });
   }, [user]);
 

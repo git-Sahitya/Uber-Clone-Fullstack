@@ -11,9 +11,8 @@ module.exports.getAddressCoordinate = async (address) => {
     if (response.data && response.data.length > 0) {
       const location = response.data[0];
       return {
-        address: location.display_name,
-        latitude: location.lat,
-        longitude: location.lon,
+        lat: location.lat,
+        lon: location.lon,
       };
     } else {
       throw new Error("No results found for the given address");
@@ -36,11 +35,11 @@ module.exports.getDistanceTime = async (origin, destination) => {
     const originCoords = await module.exports.getAddressCoordinate(origin);
     const destinationCoords = await module.exports.getAddressCoordinate(destination);
 
-    if (!originCoords.latitude || !originCoords.longitude || !destinationCoords.latitude || !destinationCoords.longitude) {
+    if (!originCoords.lat || !originCoords.lon || !destinationCoords.lat || !destinationCoords.lon) {
       throw new Error("Invalid coordinates for origin or destination");
     }
 
-    const url = `https://us1.locationiq.com/v1/directions/driving/${originCoords.longitude},${originCoords.latitude};${destinationCoords.longitude},${destinationCoords.latitude}?key=${apiKey}&overview=full&steps=true`;
+    const url = `https://us1.locationiq.com/v1/directions/driving/${originCoords.lon},${originCoords.lat};${destinationCoords.lon},${destinationCoords.lat}?key=${apiKey}&overview=full&steps=true`;
 
     const response = await axios.get(url);
 
@@ -73,8 +72,6 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
     if (response.data && response.data.length > 0) {
       return response.data.map((suggestion) => ({
         description: suggestion.display_name,
-        latitude: suggestion.lat,
-        longitude: suggestion.lon,
         term: suggestion.display_name.split(",")[0],
       }));
     } else {
@@ -87,20 +84,18 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
 };
 
 
-module.exports.getCaptainsInTheRadius  = async (latitude , longitude , radius) => {
-  
+module.exports.getCaptainsInTheRadius = async (lat, lon, radius) => {
   try {
-    console.log("Latitude:", latitude, "Longitude:", longitude, "Radius:", radius);
-
+    console.log(`Searching for captains within ${radius} km of (${lat}, ${lon})`);
     const captains = await captainModel.find({
       location: {
         $geoWithin: {
-          $centerSphere: [[longitude, latitude], radius / 6371],
+          $centerSphere: [[lat, lon], radius / 6371],
         },
       },
     });
-
-    console.log("Captains found:", captains);
+  
+    console.log(`Found ${captains.length} captains`);
     return captains;
   } catch (error) {
     console.error("Error in getCaptainsInTheRadius:", error.message);

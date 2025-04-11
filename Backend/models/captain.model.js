@@ -56,14 +56,15 @@ const captainSchema = new mongoose.Schema({
     },
   },
   location: {
-    ltd: {
+    lat: {
       type: Number,
     },
-    lng: {
+    lon: {
       type: Number,
     },
   },
 });
+
 
 captainSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this.id }, process.env.JWT_SECRET, {

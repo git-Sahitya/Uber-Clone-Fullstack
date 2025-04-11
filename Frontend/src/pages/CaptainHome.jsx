@@ -19,30 +19,34 @@ const CaptainHome = () => {
   const { captain } = useContext(CaptainDataContext);
 
   useEffect(() => {
-    socket.emit("join", {
-      userId: captain._id,
-      userType: "captain",
-    });
-    const updateLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          socket.emit("update-location-captain", {
-            userId: captain._id,
+    socket.emit("join", { userType: "captain", userId: captain._id });
+  });
+  const updateLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
 
-            location: {
-              ltd: position.coords.latitude,
-              lng: position.coords.longitude,
-            },
-          });
+         console.log({userId: captain._id,
+          location: {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          },});
+         
+
+        socket.emit("update-location-captain", {
+          userId: captain._id,
+          location: {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          },
         });
-      }
-    };
+      });
+    }
+  };
 
-    const locationInterval = setInterval(updateLocation, 10000);
-    updateLocation();
+  const locationInterval = setInterval(updateLocation, 10000);
+  updateLocation();
 
-    // return () => clearInterval(locationInterval)
-  }, []);
+  // return () => clearInterval(locationInterval) })
 
   useGSAP(
     function () {
@@ -87,7 +91,6 @@ const CaptainHome = () => {
           className="  h-10 w-10 bg-white flex items-center justify-center rounded-full"
         >
           <i className=" text-lg font-medium ri-logout-box-r-line"></i>
-          <i class=""></i>
         </Link>
       </div>
 
