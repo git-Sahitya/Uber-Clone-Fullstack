@@ -26,6 +26,7 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
+  const [ride, setRide] = useState(null)
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -43,10 +44,12 @@ const Home = () => {
   }, [user]);
 
   socket.on("ride-confirmed", (ride) => {
-    setWaitingForDriver(tr)
+    setVehicleFound(false)
+    setWaitingForDriver(true)
+    setRide(ride)
   });
 
-  // Auto Suggestion address
+  // Auto Suggestion address add some delay
 
   const fetchPickupSuggestions = useRef(
     _.debounce(async (value) => {
@@ -392,7 +395,11 @@ const Home = () => {
         ref={waitingForDriverRef}
         className="fixed w-full z-10 bottom-0   bg-white  py-6 px-3 pt-15"
       >
-        <WaitingForDriver waitingForDriver={waitingForDriver} />
+        <WaitingForDriver 
+        ride={ride}
+        setVehicleFound = {setVehicleFound}
+        setWaitingForDriver = {setWaitingForDriver}
+         waitingForDriver={waitingForDriver} />
       </div>
     </div>
   );
