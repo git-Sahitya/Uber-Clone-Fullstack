@@ -28,14 +28,14 @@ const RidePopUp = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">{props.ride?.pickup}</h3>
+              <h3 className="text-base font-medium">Pickup</h3>
               <p className="text-sm text-gray-600"> {props.ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">{props.ride?.destination}</h3>
+              <h3 className="text-base font-medium">Destination</h3>
               <p className="text-sm text-gray-600"> {props.ride?.destination}</p>
             </div>
           </div>

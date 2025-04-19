@@ -22,7 +22,7 @@ const FinishRide = (props) => {
             src="https://img.freepik.com/free-vector/organic-flat-dia-motorista-illustration_23-2148961409.jpg?uid=R193013355&ga=GA1.1.1896811457.1729647436&semt=ais_hybrid"
             alt=""
           />
-          <h2 className="text-lg font-medium">Harsh Singh</h2>
+          <h2 className="text-lg font-medium">{props.ride?.user.fullname.firstname}</h2>
         </div>
         <h5 className="text-lg font-medium">2.2Km</h5>
       </div>
@@ -31,21 +31,21 @@ const FinishRide = (props) => {
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">B/54</h3>
-              <p className="text-sm text-gray-600"> Lanka, Varanasi</p>
+              <h3 className="text-base font-medium">Pickup</h3>
+              <p className="text-sm text-gray-600"> {props.ride?.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-1">
             <i className=" text-lg ri-map-pin-range-fill"></i>
             <div>
-              <h3 className="text-base font-medium">Lane no.9</h3>
-              <p className="text-sm text-gray-600"> Cantt, Varanasi</p>
+              <h3 className="text-base font-medium">Destination</h3>
+              <p className="text-sm text-gray-600"> {props.ride?.destination}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 ">
             <i className=" ri-currency-fill"></i>
             <div>
-              <h3 className="  text-base font-medium">$2.99</h3>
+              <h3 className="  text-base font-medium">₹{props.ride?.fare}</h3>
               <p className="text-sm text-gray-600"> Cash Cash</p>
             </div>
           </div>

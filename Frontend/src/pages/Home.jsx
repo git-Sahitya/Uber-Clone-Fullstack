@@ -12,6 +12,8 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { SocketContext } from "../context/SocketContext";
 import { useContext } from "react";
 import { UserDataContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -37,6 +39,7 @@ const Home = () => {
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
+  const navigate = useNavigate()
 
   useEffect(() => {
     
@@ -48,6 +51,10 @@ const Home = () => {
     setWaitingForDriver(true)
     setRide(ride)
   });
+
+  socket.on("ride-started" , (ride)=>{
+    navigate('/riding' , {state : {ride}})
+  })
 
   // Auto Suggestion address add some delay
 
