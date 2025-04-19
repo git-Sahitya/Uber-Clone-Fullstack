@@ -104,7 +104,7 @@ module.exports.confirmRide = async ({ rideId , captain }) => {
     .findOne({
       _id: rideId,
     })
-    .populate("user").populate('captain')
+    .populate("user").populate('captain').select('+otp')
   if (!ride) {
     throw new Error("Ride is not found");
   }
