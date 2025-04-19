@@ -29,6 +29,7 @@ function initializeSocket(server) {
 
     socket.on("update-location-captain", async (data) => {
       const { userId, location } = data;
+      
 
       if (!location || !location.lat || !location.lon) {
         return socket.emit("error", { message: "Invalid location data" });

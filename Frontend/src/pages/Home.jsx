@@ -42,6 +42,10 @@ const Home = () => {
     socket.emit("join", { userType: "user", userId: user._id });
   }, [user]);
 
+  socket.on("ride-confirmed", (ride) => {
+    setWaitingForDriver(tr)
+  });
+
   // Auto Suggestion address
 
   const fetchPickupSuggestions = useRef(
@@ -365,7 +369,6 @@ const Home = () => {
           createRide={createRide}
           pickup={pickup}
           destination={destination}
-          passenger = {passenger}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
         />
