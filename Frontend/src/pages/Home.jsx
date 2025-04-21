@@ -13,7 +13,7 @@ import { SocketContext } from "../context/SocketContext";
 import { useContext } from "react";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-
+import LiveTracking from "../components/LiveTracking";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -28,7 +28,7 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
-  const [ride, setRide] = useState(null)
+  const [ride, setRide] = useState(null);
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -39,22 +39,21 @@ const Home = () => {
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    
     socket.emit("join", { userType: "user", userId: user._id });
   }, [user]);
 
   socket.on("ride-confirmed", (ride) => {
-    setVehicleFound(false)
-    setWaitingForDriver(true)
-    setRide(ride)
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+    setRide(ride);
   });
 
-  socket.on("ride-started" , (ride)=>{
-    navigate('/riding' , {state : {ride}})
-  })
+  socket.on("ride-started", (ride) => {
+    navigate("/riding", { state: { ride } });
+  });
 
   // Auto Suggestion address add some delay
 
@@ -285,14 +284,13 @@ const Home = () => {
         src="https://logospng.org/download/uber/logo-uber-4096.png"
         alt=""
       />
-      <div className=" h-screen w-screen">
-        {/* image for temporary use */}
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
-      </div>
+     <div
+      className={`h-[68%] w-full transition-all duration-300 ${
+        panelOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
+      <LiveTracking />
+    </div>
       <div className=" flex flex-col justify-end h-screen absolute top-0 w-full ">
         <div className="h-[30%] relative bg-white p-6">
           <h5
@@ -402,11 +400,12 @@ const Home = () => {
         ref={waitingForDriverRef}
         className="fixed w-full z-10 bottom-0   bg-white  py-6 px-3 pt-15"
       >
-        <WaitingForDriver 
-        ride={ride}
-        setVehicleFound = {setVehicleFound}
-        setWaitingForDriver = {setWaitingForDriver}
-         waitingForDriver={waitingForDriver} />
+        <WaitingForDriver
+          ride={ride}
+          setVehicleFound={setVehicleFound}
+          setWaitingForDriver={setWaitingForDriver}
+          waitingForDriver={waitingForDriver}
+        />
       </div>
     </div>
   );

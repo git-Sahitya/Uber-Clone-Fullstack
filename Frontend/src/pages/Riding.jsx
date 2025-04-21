@@ -2,6 +2,7 @@ import React from "react";
 import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {  useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 
 
 
@@ -22,13 +23,10 @@ socket.on('ride-ended' , ()=>{
         <i className=""></i>
       </Link>
 
-      <div className="h-1/2">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
-      </div>
+      <div className='h-1/2'>
+                <LiveTracking />
+
+            </div>
       <div className="h-1/2 p-4">
         <div className="flex items-center justify-between">
           <img
