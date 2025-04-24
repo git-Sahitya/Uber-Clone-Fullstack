@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
 
 const containerStyle = {
   width: '100%',
-  height: '100%',
+  height: '68%',
 };
 
 const fallbackCenter = { lat: 25.3176, lng: 82.9739 }; // Example: San Francisco
